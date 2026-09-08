@@ -1,11 +1,12 @@
+import streamlit as st
+
 import os
 import zipfile
-import numpy as np
-import streamlit as st
+from pathlib import Path
+
 import tensorflow as tf
 from tensorflow.keras import layers
 import keras_hub
-from pathlib import Path
 
 import utilities.utils as utilities
 
@@ -139,15 +140,14 @@ def load_structura_model():
     return model_3_reconstructed
 
 # --------------------------------------------------
-# STREAMLIT UI SETUP & MODEL INITIALIZATION
+# MODEL INITIALIZATION
 # --------------------------------------------------
 left_col, middle_col, right_col = st.columns([1, 2, 1])
 
 with middle_col:
     # Initialize model
     try:
-        with st.spinner('Loading Model...'):
-            model = load_structura_model()
+        model = load_structura_model()
     except Exception as exc:
         st.error(f"Failed to load model: {exc}")
         st.stop()       
@@ -206,16 +206,38 @@ abstract_line_numbers_one_hot, abstract_total_lines_one_hot, abstract_lines, abs
 if not abstract_lines:
     st.stop()
 
-with st.spinner('Structuring...'):
-    with tf.device('/CPU:0'):
-        # Pass inputs exactly as configured during the recovery test
-        model_pred_probs = model.predict(x=(
-            abstract_line_numbers_one_hot,
-            abstract_total_lines_one_hot,
-            tf.constant(abstract_lines),
-            tf.expand_dims(tf.constant(abstract_chars), axis=-1)
-        ))
+left_col, middle_col, right_col = st.columns([1, 2, 1])
+with middle_col:
+    with st.spinner('Structuring...'):
+        with tf.device('/CPU:0'):
+            # Pass inputs to the model for prediction
+            model_pred_probs = model.predict(x=(
+                abstract_line_numbers_one_hot,
+                abstract_total_lines_one_hot,
+                tf.constant(abstract_lines),
+                tf.expand_dims(tf.constant(abstract_chars), axis=-1)
+            ))
 
-# Render output via utilities
 output = utilities.output_formatting(model_pred_probs, abstract_lines)
-st.write(output)
+
+st.divider()
+
+st.markdown(
+    """
+        <h3 
+            style='text-align: center;
+                    font-size: 1.5rem;
+                    letter-spacing: 0.15rem;
+                    font-family: "Roboto";'>
+            We Think The Research is About
+        </h3>
+    """,
+    unsafe_allow_html=True)
+
+st.divider()
+
+utilities.pretty_output(output)
+
+with st.expander('Alternate Output'):
+    second_best_output = utilities.output_formatting(model_pred_probs, abstract_lines, k=2)
+    utilities.pretty_output(second_best_output)
