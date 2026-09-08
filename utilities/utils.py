@@ -1,9 +1,11 @@
-from html import escape
-import tensorflow as tf
-from pathlib import Path
-from spacy.lang.en import English
-import re
 import streamlit as st
+
+import tensorflow as tf
+from spacy.lang.en import English
+
+from html import escape
+from pathlib import Path
+import re
 
 class_names_path = Path(__file__).with_name('class_names.txt')
 
@@ -109,38 +111,40 @@ def output_formatting(model_pred_probs, abstract_lines, class_names=class_names,
 
         return formatted_lines
 
-def pretty_output(output):
+def render_structured_abstract(formatted_output):
     """
-    Displays the formatted output in a user-friendly manner.
+    Renders the ML output into a continuous prose scientific abstract 
+    with premium glassmorphism and integrated tooltip confidence scores.
     """
-    # Format the output for display
-    pretty_output = {'BACKGROUND': [], 'OBJECTIVE': [], 'METHODS': [], 'RESULTS': [], 'CONCLUSIONS': [], 'OTHER': []}
-    for line in output:
-        pretty_output[line['label']].append(line)
+    # Group by labels
+    grouped_output = {'BACKGROUND': [], 'OBJECTIVE': [], 'METHODS': [], 'RESULTS': [], 'CONCLUSIONS': [], 'OTHER': []}
+    for line in formatted_output:
+        label = line.get('label', 'OTHER').upper()
+        if label not in grouped_output:
+            grouped_output[label] = []
+        grouped_output[label].append(line)
 
-    pretty_output = {k: v for k, v in pretty_output.items() if v}
+    grouped_output = {k: v for k, v in grouped_output.items() if v}
 
     left_col, middle_col, right_col = st.columns([1, 2, 1])
 
     with right_col:
-        # displaying raw model probability values
-        with st.popover('Raw Model Outputs'):                    
-            st.dataframe(output)
+        # Floating Raw Output Popover
+        st.markdown("<div style='display: flex; justify-content: flex-end;'>", unsafe_allow_html=True)
+        with st.popover('Raw Model Output'):                    
+            st.dataframe(formatted_output)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    for label, lines in pretty_output.items():
+    # HTML Construction
+    html_content = "<div class='glass-card'>"
+    for label, lines in grouped_output.items():
+        # Clean spacing and group sentences into a single continuous block
         text = re.sub(r"\s+", " ", " ".join(line['text'] for line in lines)).strip()
-        mean_confidence = sum(line['confidence probability'] for line in lines) / len(lines)
+        mean_confidence = sum(line.get('confidence probability', 0) for line in lines) / len(lines)
         confidence_text = f"{mean_confidence:.2%}"
-
-        st.markdown(
-            f"""
-                <h4 
-                    style='text-align: left;
-                            font-size: 1.25rem;
-                            letter-spacing: 0.15rem;'>
-                    <span title='Mean confidence: {confidence_text}'>
-                        {escape(label)}
-                    </span>: {escape(text)}
-                </h4>
-            """,
-            unsafe_allow_html=True)
+        
+        # Using a single-line string prevents Streamlit from misinterpreting indentation as a Markdown code block
+        html_content += f'<div class="abstract-paragraph"><span class="category-label">{escape(label)}<span class="tooltip-text">Mean Confidence: {confidence_text}</span></span> {escape(text)}</div>'
+        
+    html_content += "</div>"
+    st.markdown(html_content, unsafe_allow_html=True)
