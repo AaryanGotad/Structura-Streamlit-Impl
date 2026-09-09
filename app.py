@@ -274,7 +274,7 @@ def load_structura_model():
     char_inputs = layers.Input(shape=(1,), dtype=tf.string, name='char_inputs')
 
     with open(char_vocab_path, "r", encoding="utf-8") as f:
-        char_vocab = [line.strip() for line in f if line.strip()]
+        char_vocab = [line.strip() for line in f if line.strip() and line.strip() != "[UNK]"]
 
     char_vectorizer = layers.TextVectorization(
         name="text_vectorization",
