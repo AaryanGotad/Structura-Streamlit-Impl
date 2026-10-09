@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STRUCTURA | Scientific Abstract Analysis</title>
+    <!-- Import Outfit font for taller, highly elegant typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:ital,wght@0,200;0,300;0,350;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+        </header>
+
+        <main>
+            <!-- Hero -->
+            <section class="hero">
+                <h1 class="brand-wordmark">STRUCT<span class="accent-part">URA</span></h1>
+                <p class="tagline">See what the research is about.</p>
+            </section>
+
+            <!-- Input Area -->
+            <section class="input-section">
+                <div class="textarea-wrapper">
+                    <label for="abstract-input" class="visually-hidden">Paste scientific abstract</label>
+                    <textarea id="abstract-input" placeholder="Paste a scientific abstract here..."></textarea>
+                </div>
+                <p class="input-hint">Works best with scientific or medical research abstracts.</p>
+            </section>
+
+            <!-- Actions -->
+            <div class="action-bar">
+                <button id="btn-analyze" class="btn btn-primary">Analyze abstract</button>
+                <button id="btn-clear" class="btn btn-secondary">Clear</button>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading-state" class="loading-state hidden">
+                <div class="spinner"></div>
+                <p class="loading-text">Analyzing your abstract...</p>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results-container">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- Samples -->
+            <section class="samples-section">
+                <h2 class="section-heading" style="font-size: 1.05rem; color: var(--text-muted);">Try a sample abstract</h2>
+                <div class="samples-grid" id="samples-grid">
+                    <!-- Injected via JS -->
+                </div>
+            </section>
+
+            <!-- Limitations / Educational -->
+            <section class="limitations-section">
+                <h2>Why might Structura get a line wrong?</h2>
+                <p>Scientific language can be highly nuanced and sentence classification is not perfect. You might notice occasional misclassifications because:</p>
+                <ul class="limitations-list">
+                    <li>Some sentences naturally contain information belonging to multiple categories (e.g., combining a method and a result in one sentence).</li>
+                    <li>Not all scientific abstracts follow a rigid, predictable structure.</li>
+                    <li>The model was trained primarily on medical and life-science datasets and may perform less reliably on texts outside that specific distribution.</li>
+                </ul>
+            </section>
+        </main>
+        
+        <!-- Footer -->
+        <footer>
+            <div class="footer-links">
+                <a href="#about">About</a>
+                <a href="#docs">Documentation</a>
+                <a href="https://github.com/#placeholder" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://linkedin.com/#placeholder" target="_blank" rel="noopener">LinkedIn</a>
+            </div>
+            <p class="footer-copy">&copy; 2026 Structura. Interface Prototype.</p>
+        </footer>
+    </div>
+
+    <script src="script.js?v=3"></script>
+</body>
+</html>
