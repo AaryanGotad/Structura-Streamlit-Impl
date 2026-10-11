@@ -21,6 +21,11 @@ SAMPLE_ABSTRACTS = [
     ("Robotics", "Autonomous vehicle navigation relies heavily on real-time object detection, but current deep learning models often struggle under heavy rain and foggy conditions. This paper introduces an adaptive feature-fusion network designed to maintain high object-detection accuracy across diverse adverse weather scenarios. We trained and evaluated our convolutional neural network architecture on a newly curated synthetic dataset containing 50,000 degraded driving images. The proposed model dynamically adjusts convolutional filter weights based on estimated ambient lighting and visibility metrics extracted from the input frame. Performance was benchmarked against three industry-standard architectures using mean Average Precision (mAP) calculations. The adaptive network achieved an mAP of 84.3% in heavy rain simulations, outperforming the baseline model by 11.5 percentage points. Processing speeds remained stable at 45 frames per second on standard edge-computing hardware. Dynamic feature-fusion networks offer a reliable and computationally efficient solution for enhancing autonomous vehicle safety in unpredictable environments."),
 ]
 
+LOW_MEAN_CONFIDENCE_THRESHOLD = 0.45
+HIGH_VOLATILITY_THRESHOLD = 0.67
+MIN_SENTENCE_COUNT = 3
+MAX_SENTENCE_COUNT = 30
+
 
 def inject_frontend_css() -> None:
     st.markdown(
@@ -65,6 +70,16 @@ def inject_frontend_css() -> None:
         .sample-preview { color: #8e8e93; font-size: .9rem; line-height: 1.5; margin-bottom: 1rem; }
         .limitations-section { margin-top: 3rem; padding: 1.5rem; color: #8e8e93; }
         .limitations-section h2 { color: #e5e5ea; font-size: 1.15rem; }
+        .ood-banner { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 1.1rem;
+            margin: 0 0 1.5rem; background: rgba(245,158,11,.1);
+            border: 1px solid rgba(245,158,11,.28); border-radius: 12px; color: #f7d9a0; }
+        .ood-banner-icon { display: inline-flex; align-items: center; justify-content: center;
+            flex: 0 0 24px; width: 24px; height: 24px; margin-top: .15rem;
+            border: 1px solid #fbbf24; border-radius: 50%; background: rgba(251,191,36,.16);
+            color: #fbbf24; font-size: .85rem; font-weight: 600; line-height: 1; }
+        .ood-banner-copy { display: grid; gap: .35rem; font-size: .92rem; line-height: 1.55; }
+        .ood-banner-copy p { margin: 0; }
+        .ood-banner-title { color: #fff; font-weight: 500; }
         </style>""",
         unsafe_allow_html=True,
     )
@@ -163,6 +178,39 @@ def analyze() -> None:
         st.session_state.analysis = text
 
 
+def is_likely_ood(formatted_output: list[dict]) -> bool:
+    sentence_count = len(formatted_output)
+    if sentence_count < MIN_SENTENCE_COUNT or sentence_count > MAX_SENTENCE_COUNT:
+        return True
+
+    mean_confidence = sum(
+        float(line.get("confidence probability", 0.0))
+        for line in formatted_output
+    ) / sentence_count
+    if mean_confidence < LOW_MEAN_CONFIDENCE_THRESHOLD:
+        return True
+
+    class_changes = sum(
+        formatted_output[index - 1].get("label") != formatted_output[index].get("label")
+        for index in range(1, sentence_count)
+    )
+    change_rate = class_changes / (sentence_count - 1)
+    return change_rate >= HIGH_VOLATILITY_THRESHOLD
+
+
+def render_ood_banner() -> None:
+    st.markdown(
+        '<aside class="ood-banner" role="status" aria-live="polite">'
+        '<span class="ood-banner-icon" aria-hidden="true">i</span>'
+        '<div class="ood-banner-copy">'
+        '<p class="ood-banner-title">This text looks a bit different from the medical abstracts Structura usually reads.</p>'
+        '<p>Structura works best with clinical research papers. You can still view the analysis, but the structural labels might not be as accurate.</p>'
+        '<p>Try using one of the sample medical abstracts to see Structura at its best.</p>'
+        '</div></aside>',
+        unsafe_allow_html=True,
+    )
+
+
 def render_grouped_output(formatted_output: list[dict]) -> None:
     groups = []
     for line in formatted_output:
@@ -238,6 +286,8 @@ def main() -> None:
         primary = utilities.output_formatting(probabilities, lines)
         alternate = utilities.output_formatting(probabilities, lines, k=2)
         st.markdown('<section class="results-section"><div class="result-heading">Structured abstract</div>', unsafe_allow_html=True)
+        if is_likely_ood(primary):
+            render_ood_banner()
         render_raw_output(primary, probabilities, lines)
         render_grouped_output(primary)
         with st.expander("See alternative predictions"):
