@@ -64,27 +64,41 @@
             <!-- Limitations / Educational -->
             <section class="limitations-section">
                 <h2>Why might Structura get a line wrong?</h2>
-                <p>Scientific language can be highly nuanced and sentence classification is not perfect. You might notice occasional misclassifications because:</p>
+                <p>Structura is designed for English medical and clinical research abstracts, especially those with the rhetorical patterns found in its training data. It always assigns one of five labels, even when the text is outside that domain, so predictions should be treated as helpful signals rather than definitive answers.</p>
                 <ul class="limitations-list">
-                    <li>Some sentences naturally contain information belonging to multiple categories (e.g., combining a method and a result in one sentence).</li>
-                    <li>Not all scientific abstracts follow a rigid, predictable structure.</li>
-                    <li>The model was trained primarily on medical and life-science datasets and may perform less reliably on texts outside that specific distribution.</li>
+                    <li>Some sentences naturally contain information belonging to multiple categories, such as a method and a result in the same sentence.</li>
+                    <li>Not all scientific abstracts follow a rigid, predictable structure, and sentence boundaries may not match the model's expectations.</li>
+                    <li>The model was trained primarily on medical and life-science abstracts, so robotics, news, general prose, fragments, and other out-of-domain text may be classified less reliably.</li>
+                    <li>Structura uses lightweight warning signals for likely out-of-domain input, including unusual sentence counts, low average confidence, or frequent changes between predicted classes. These warnings do not change the predictions and are not definitive proof that text is out of domain.</li>
+                    <li>Confidence scores are model outputs, not calibrated probabilities of correctness, and the model has no explicit <code>UNKNOWN</code> or <code>MIXED</code> category.</li>
                 </ul>
             </section>
+
+            <!-- About -->
+            <section id="about" class="limitations-section about-section" aria-labelledby="about-heading">
+                <h2 id="about-heading">About Structura</h2>
+                <p>Structura is a full-stack machine learning application that analyzes scientific abstracts sentence by sentence. It keeps the original wording and identifies the likely rhetorical role of each sentence, making the flow of a study easier to scan and understand.</p>
+                <ul class="limitations-list">
+                    <li>Each sentence is classified as <code>BACKGROUND</code>, <code>OBJECTIVE</code>, <code>METHODS</code>, <code>RESULTS</code>, or <code>CONCLUSIONS</code>, with alternative predictions and confidence scores available for inspection.</li>
+                    <li>The application combines a lightweight HTML, CSS, and JavaScript frontend with a Spring Boot API and a FastAPI/TensorFlow inference service.</li>
+                    <li>It works best with English medical and life-science abstracts. Predictions are useful signals rather than definitive answers, especially for mixed sentences or text outside the model's training domain.</li>
+                </ul>
+                <p>Interested in the model, API, setup, and design decisions? <a href="https://github.com/AaryanGotad/Structura" target="_blank" rel="noopener">Explore the project repository on GitHub ↗</a></p>
+            </section>
+
         </main>
         
         <!-- Footer -->
         <footer>
             <div class="footer-links">
-                <a href="#about">About</a>
-                <a href="#docs">Documentation</a>
-                <a href="https://github.com/#placeholder" target="_blank" rel="noopener">GitHub</a>
-                <a href="https://linkedin.com/#placeholder" target="_blank" rel="noopener">LinkedIn</a>
+                <a href="https://github.com/AaryanGotad/Structura#readme" target="_blank" rel="noopener">Documentation</a>
+                <a href="https://github.com/AaryanGotad/Structura" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://www.linkedin.com/in/aaryan-gotad-b82aa5327" target="_blank" rel="noopener">LinkedIn</a>
             </div>
-            <p class="footer-copy">&copy; 2026 Structura. Interface Prototype.</p>
+            <p class="footer-copy">&copy; 2026 Structura. Made with ❤️ by Aaryan Gotad at IIT Guwahati.</p>
         </footer>
     </div>
 
-    <script src="script.js?v=3"></script>
+    <script src="script.js?v=5"></script>
 </body>
 </html>

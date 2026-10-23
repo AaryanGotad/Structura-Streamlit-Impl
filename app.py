@@ -69,7 +69,21 @@ def inject_frontend_css() -> None:
             text-transform: uppercase; margin-bottom: .5rem; }
         .sample-preview { color: #8e8e93; font-size: .9rem; line-height: 1.5; margin-bottom: 1rem; }
         .limitations-section { margin-top: 3rem; padding: 1.5rem; color: #8e8e93; }
-        .limitations-section h2 { color: #e5e5ea; font-size: 1.15rem; }
+        .limitations-section h2 { color: #e5e5ea; font-size: 1.25rem; font-weight: 400;
+            letter-spacing: .01em; margin-bottom: 1.25rem; }
+        .limitations-section p { color: #8e8e93; font-size: 1.05rem; line-height: 1.7;
+            font-weight: 300; margin-bottom: 1.25rem; }
+        .limitations-list { list-style: none; margin: 0; padding: 0; }
+        .limitations-list li { position: relative; padding-left: 1.5rem; margin-bottom: .9rem;
+            color: #8e8e93; font-size: 1.05rem; line-height: 1.7; font-weight: 300; }
+        .limitations-list li::before { content: "•"; position: absolute; left: 0;
+            color: #8da3ff; font-weight: 600; }
+        .limitations-list code { color: #d1d1d6; font-family: monospace; font-size: .9em; }
+        .about-section { margin-top: 1.5rem; }
+        .about-section a, .footer-links a { color: #8da3ff; text-decoration: none; }
+        .about-section a:hover, .footer-links a:hover { color: #b1beff; text-decoration: underline; }
+        .footer-links { display: flex; justify-content: center; gap: 2rem; margin: 3rem 0 1rem; }
+        .footer-copy { color: #52525b; font-size: .85rem; text-align: center; }
         .ood-banner { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 1.1rem;
             margin: 0 0 1.5rem; background: rgba(245,158,11,.1);
             border: 1px solid rgba(245,158,11,.28); border-radius: 12px; color: #f7d9a0; }
@@ -306,12 +320,35 @@ def main() -> None:
     st.markdown("</section>", unsafe_allow_html=True)
 
     st.markdown(
-        '<section class="limitations-section"><h2>Why might Structura get a line wrong?</h2>'
-        '<p>Scientific language can be highly nuanced and sentence classification is not perfect. You might notice occasional misclassifications because:</p>'
-        '<ul class="limitations-list"><li>Some sentences naturally contain information belonging to multiple categories.</li>'
-        '<li>Not all scientific abstracts follow a rigid, predictable structure.</li>'
-        '<li>The model was trained primarily on medical and life-science datasets.</li></ul></section>'
-        '<footer><p class="footer-copy">&copy; 2026 Structura. Interface Prototype.</p></footer></main></div>',
+        '<section class="limitations-section">'
+        '<h2>Why might Structura get a line wrong?</h2>'
+        '<p>Structura is designed for English medical and clinical research abstracts, especially those with the rhetorical patterns found in its training data. It always assigns one of five labels, even when the text is outside that domain, so predictions should be treated as helpful signals rather than definitive answers.</p>'
+        '<ul class="limitations-list">'
+        '<li>Some sentences naturally contain information belonging to multiple categories, such as a method and a result in the same sentence.</li>'
+        '<li>Not all scientific abstracts follow a rigid, predictable structure, and sentence boundaries may not match the model\'s expectations.</li>'
+        '<li>The model was trained primarily on medical and life-science abstracts, so robotics, news, general prose, fragments, and other out-of-domain text may be classified less reliably.</li>'
+        '<li>Structura uses lightweight warning signals for likely out-of-domain input, including unusual sentence counts, low average confidence, or frequent changes between predicted classes. These warnings do not change the predictions and are not definitive proof that text is out of domain.</li>'
+        '<li>Confidence scores are model outputs, not calibrated probabilities of correctness, and the model has no explicit <code>UNKNOWN</code> or <code>MIXED</code> category.</li>'
+        '</ul></section>'
+        '<section id="about" class="limitations-section about-section">'
+        '<h2>About Structura</h2>'
+        '<p>Structura is a full-stack machine learning application that analyzes scientific abstracts sentence by sentence. It keeps the original wording and identifies the likely rhetorical role of each sentence, making the flow of a study easier to scan and understand.</p>'
+        '<ul class="limitations-list">'
+        '<li>Each sentence is classified as <code>BACKGROUND</code>, <code>OBJECTIVE</code>, <code>METHODS</code>, <code>RESULTS</code>, or <code>CONCLUSIONS</code>, with alternative predictions and confidence scores available for inspection.</li>'
+        '<li>The application combines a lightweight HTML, CSS, and JavaScript frontend with a Spring Boot API and a FastAPI/TensorFlow inference service.</li>'
+        '<li>It works best with English medical and life-science abstracts. Predictions are useful signals rather than definitive answers, especially for mixed sentences or text outside the model\'s training domain.</li>'
+        '</ul>'
+        '<p>Interested in the model, API, setup, and design decisions? '
+        '<a href="https://github.com/AaryanGotad/Structura" target="_blank" rel="noopener">Explore the project repository on GitHub ↗</a></p>'
+        '</section>'
+        '<footer>'
+        '<div class="footer-links">'
+        '<a href="https://github.com/AaryanGotad/Structura#readme" target="_blank" rel="noopener">Documentation</a>'
+        '<a href="https://github.com/AaryanGotad/Structura" target="_blank" rel="noopener">GitHub</a>'
+        '<a href="https://www.linkedin.com/in/aaryan-gotad-b82aa5327" target="_blank" rel="noopener">LinkedIn</a>'
+        '</div>'
+        '<p class="footer-copy">&copy; 2026 Structura. Made with &#10084; by Aaryan Gotad at IIT Guwahati.</p>'
+        '</footer></main></div>',
         unsafe_allow_html=True,
     )
 

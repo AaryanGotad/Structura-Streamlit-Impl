@@ -143,7 +143,7 @@ const App = {
 
         try {
             const result = await ApiService.analyzeAbstract(text);
-            this.renderResults(result.data, result.rawOutput);
+            this.renderResults(result);
         } catch (error) {
             console.error("Analysis failed:", error);
             alert("An error occurred during analysis. Please try again.");
@@ -232,10 +232,21 @@ const App = {
         `;
     },
 
-    renderResults(predictions) {
+    renderResults(result) {
+        const predictions = Array.isArray(result.data) ? result.data : [];
         const primaryHTML = this.generateStructuredParagraphsHTML(predictions, false);
         const altHTML = this.generateStructuredParagraphsHTML(predictions, true);
         const rawScoresTableHTML = this.generateRawScoresTableHTML(predictions);
+        const oodBannerHTML = result.isLikelyOOD ? `
+            <aside class="ood-banner" role="status" aria-live="polite">
+                <span class="ood-banner-icon" aria-hidden="true">i</span>
+                <div class="ood-banner-copy">
+                    <p class="ood-banner-title">This text looks a bit different from the medical abstracts Structura usually reads.</p>
+                    <p>Structura works best with clinical research papers. You can still view the analysis, but the structural labels might not be as accurate.</p>
+                    <p>Try using one of the sample medical abstracts to see Structura at its best.</p>
+                </div>
+            </aside>
+        ` : '';
 
         const html = `
             <section class="results-section">
@@ -247,7 +258,8 @@ const App = {
                             ${rawScoresTableHTML}
                         </div>
                     </div>
-                    
+
+                    ${oodBannerHTML}
                     ${primaryHTML}
                 </div> 
 
